@@ -8,10 +8,10 @@
             font-family: Arial, Helvetica, sans-serif;
         }
 
-        h1 {
+        h1, h3 {
             text-align: center;
         }
-        
+
         svg {
             display: block;
             margin-left: auto;
@@ -21,7 +21,11 @@
 </head>
 
 <body>
-    <h1>NEGRO POPULATION OF GEORGIA BY COUNTIES.</h1>
+    <h1>"NEGRO POPULATION OF GEORGIA BY COUNTIES."</h1>
+    <h3><a
+            href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge01/original-plate-06.jpg">Original
+            print</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
+    </h3>
 </body>
 <script>
     const width = 1000,
@@ -105,16 +109,16 @@
         drawLegend(0, 900, "UNDER 1000");
 
         svg.append("text")
-        .attr("x", 100)
-        .attr("y", 50)
-        .attr("font-size", "1.5em")
-        .text("1870");
+            .attr("x", 100)
+            .attr("y", 50)
+            .attr("font-size", "1.5em")
+            .text("1870");
 
         svg.append("text")
-        .attr("x", 400)
-        .attr("y", 575)
-        .attr("font-size", "1.5em")
-        .text("1880");
+            .attr("x", 400)
+            .attr("y", 575)
+            .attr("font-size", "1.5em")
+            .text("1880");
     }
 
     async function onload() {
