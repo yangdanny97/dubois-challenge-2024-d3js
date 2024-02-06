@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+        
+        svg {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>NEGRO POPULATION OF GEORGIA BY COUNTIES.</h1>
+</body>
+<script>
+    const width = 1000,
+        height = 1200;
+    const svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
+
+    const categories = [
+        "UNDER 1000",
+        "1000 TO 2500",
+        "2500 TO 5000",
+        "5000 TO 10000",
+        "10000 TO 15000",
+        "15000 TO 20000",
+        "BETWEEN 20000 AND 30000"
+    ];
+
+    const colorScale = d3.scaleOrdinal()
+        .domain(categories)
+        .range([
+            "teal",
+            "#ffd700", // gold
+            "#ffc0cb", // pink
+            "#dc143c", // red
+            "#d2b48c", // tan
+            "#654321", // brown
+            "navy",
+        ]);
+
+    function drawLegend(x, y, category) {
+        const r = 20;
+        svg.append("circle")
+            .attr("cx", x + r * 2)
+            .attr("cy", y)
+            .attr("r", r)
+            .attr("stroke", "black")
+            .attr("stroke-width", "1px")
+            .attr("fill", colorScale(category));
+        svg.append("text")
+            .attr("x", x + r * 4)
+            .attr("y", y)
+            .attr("font-size", "1.5em")
+            .attr('dominant-baseline', 'middle')
+            .text(category);
+    }
+
+    function draw(json1, json2) {
+        const projection1 = d3.geoIdentity()
+            .reflectY(true)
+            .fitExtent([[25, 25], [475, 475]], json1);
+        svg.append("g")
+            .attr("transform", "rotate(7)")
+            .selectAll("path")
+            .data(json1.features)
+            .enter()
+            .append("path")
+            .attr("stroke", "black")
+            .attr("stroke-width", "1px")
+            .attr("d", d3.geoPath().projection(projection1))
+            .attr("fill", d => colorScale(d.properties.population));
+
+        const projection2 = d3.geoIdentity()
+            .reflectY(true)
+            .fitExtent([[325, 525], [825, 975]], json2);
+        svg.append("g")
+            .attr("transform", "rotate(7)")
+            .selectAll("path")
+            .data(json2.features)
+            .enter()
+            .append("path")
+            .attr("stroke", "black")
+            .attr("stroke-width", "1px")
+            .attr("d", d3.geoPath().projection(projection2))
+            .attr("fill", d => colorScale(d.properties.population));
+
+        drawLegend(400, 100, "BETWEEN 20000 AND 30000");
+        drawLegend(400, 200, "15000 TO 20000");
+        drawLegend(400, 300, "10000 TO 15000");
+        drawLegend(0, 600, "5000 TO 10000");
+        drawLegend(0, 700, "2500 TO 5000");
+        drawLegend(0, 800, "1000 TO 2500");
+        drawLegend(0, 900, "UNDER 1000");
+
+        svg.append("text")
+        .attr("x", 100)
+        .attr("y", 50)
+        .attr("font-size", "1.5em")
+        .text("1870");
+
+        svg.append("text")
+        .attr("x", 400)
+        .attr("y", 575)
+        .attr("font-size", "1.5em")
+        .text("1880");
+    }
+
+    async function onload() {
+        const json1 = await d3.json("./georgia_county_1870_simplified.json");
+        const json2 = await d3.json("./georgia_county_1880_simplified.json");
+        const csv1 = await d3.csv("./data1870.csv");
+        const csv2 = await d3.csv("./data1880.csv");
+        const pop1870 = {};
+        csv1.forEach(d => {
+            pop1870[d.County.toUpperCase()] = d.Population;
+        });
+        const pop1880 = {};
+        csv2.forEach(d => {
+            pop1880[d.County.toUpperCase()] = d.Population;
+        });
+        json1.features.forEach(feature => {
+            feature.properties.population = pop1870[feature.properties.NHGISNAM.toUpperCase()];
+        });
+        json2.features.forEach(feature => {
+            feature.properties.population = pop1880[feature.properties.NHGISNAM.toUpperCase()];
+        });
+        draw(json1, json2);
+    }
+
+    onload();
+</script>
+
+</html>
