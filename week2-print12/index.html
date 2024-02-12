@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        h1, h3 {
+            text-align: center;
+        }
+
+        svg {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>"SLAVES AND FREE NEGROES."</h1>
+    <h3><a
+            href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge02/original-plate-12.jpg">Original
+            plate</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
+    </h3>
+</body>
+<script>
+    const width = 1000,
+        height = 1200;
+    const svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
+
+    function draw(data) {        
+        const percentScale = d3.scaleLinear()
+            .domain([3, 0])
+            .range([300, 700]);
+        const yearScale = d3.scaleLinear()
+            .domain(d3.extent(data, d => d.Year))
+            .range([100, 1100]);
+        svg.append("rect")
+        .attr("x", 250)
+        .attr("y", 100)
+        .attr("width", 450)
+        .attr("height", 1000)
+        .attr("stroke", "white")
+        .attr("fill", "black");
+        svg.append("path")
+        .datum(data)
+        .attr("fill", "red")
+        .attr("stroke", "white")
+        .attr("d", d3.area()
+            .x0(percentScale(0))
+            .x1(d => percentScale(d.Free))
+            .y(d => yearScale(d.Year))
+        );
+        // create jagged shape to cut off both red and black data
+        const [minYear, maxYear] = d3.extent(data, d => d.Year);
+        const jaggedData = [];
+        const magnitude = 0.1;
+        const resolution = 5;
+        for (var i = minYear * resolution; i <= maxYear * resolution; i++) {
+            jaggedData.push({
+                n: 3 - Math.random() * magnitude + magnitude / 2,
+                i: i / resolution,
+            });
+        }
+        svg.append("path")
+        .datum(jaggedData)
+        .attr("fill", "white")
+        .attr("stroke", "white")
+        .attr("d", d3.area()
+            .x0(percentScale(100))
+            .x1(d => percentScale(d.n))
+            .y(d => yearScale(d.i))
+        );
+        data.forEach((d, i) => {
+            svg.append("text")
+                .attr("x", 270)
+                .attr("y", yearScale(d.Year))
+                .attr("font-size", "1.2em")
+                .attr('dominant-baseline', 'middle')
+                .attr("text-anchor", "end")
+                .text(d.Year);
+            // only the first and last labels have %
+            svg.append("text")
+                .attr("x", 730)
+                .attr("y", yearScale(d.Year))
+                .attr("font-size", "1.2em")
+                .attr('dominant-baseline', 'middle')
+                .text((i === 0 || i === data.length - 1) ? `${d.Label}%` : d.Label);
+            svg.append("line")
+                .attr("x1", 300)
+                .attr("x2", 700)
+                .attr("y1", yearScale(d.Year))
+                .attr("y2", yearScale(d.Year))
+                .attr("stroke", "white");
+        });
+        [0, 1, 2, 3].forEach(d => {
+            // 0 is not labeled on the axis
+            if (d != 0) {
+                svg.append("text")
+                    .attr("x", percentScale(d))
+                    .attr("text-anchor", "middle")
+                    .attr("y", "90")
+                    .text(`${d}%`);
+            }
+            svg.append("line")
+                .attr("x1", percentScale(d))
+                .attr("x2", percentScale(d))
+                .attr("y1", 95)
+                .attr("y2", 100)
+                .attr("stroke", "black");
+        });
+        svg.append("text")
+            .attr("x", 750)
+            .attr("y", 50)
+            .attr("text-anchor", "middle")
+            .text("PERCENT OF FREE NEGROES");
+    }
+
+    async function onload() {
+        const csv = await d3.csv("./data.csv");
+        csv.forEach(d => {
+            d.Year = parseInt(d.Year);
+            // modify the data to visually match the slope at the cutoff
+            // without affecting the label
+            d.Label = parseFloat(d.Free);
+            d.Free = Math.min(parseFloat(d.Free), 10);
+        });
+        draw(csv);
+    }
+
+    onload();
+</script>
+
+</html>
