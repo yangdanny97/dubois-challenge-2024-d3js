@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://d3js.org/topojson.v3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-geo-projection@4"></script>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #e4cfbed9;
+        }
+
+        h1,
+        h2,
+        h3 {
+            text-align: center;
+        }
+
+        svg {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>"THE GEORGIA NEGRO."</h1>
+    <h2>A SOCIAL STUDY</h2>
+    <h2>BY</h2>
+    <h2>W.E.BURGHARDT DU BOIS.</h2>
+    <h3><a
+            href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge04/original-plate-01.jpg">Original
+            plate</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
+    </h3>
+</body>
+<script>
+    const width = 1100,
+        height = 1200;
+
+    // coordinates are E,N
+    const GEORGIA_COORD = [-81.834759538222769, 30.679555235289669];
+    const svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
+
+    function draw(land, highlights, lines) {
+        const geoLand = topojson.feature(land, land.objects.land);
+        const projection = d3.geoInterruptedMollweideHemispheres().fitSize([1000, 500], geoLand);
+        const path = d3.geoPath().projection(projection);
+
+        const map = svg.append("g").attr("transform", "translate(50,50)");
+        const defs = svg.append("defs");
+        defs.append("path")
+            .datum({ type: "Sphere" })
+            .attr("id", "sphere")
+            .attr("d", path);
+        defs.append("clipPath")
+            .attr("id", "clip")
+            .append("use")
+            .attr("xlink:href", "#sphere");
+
+        // background/outline
+        map.append("circle")
+            .attr("cx", 250)
+            .attr("cy", 247)
+            .attr("r", 250)
+            .attr("stroke", "black")
+            .attr("stroke-width", 2)
+            .attr("fill", "#d6b496");
+        map.append("circle")
+            .attr("cx", 750)
+            .attr("cy", 247)
+            .attr("r", 250)
+            .attr("stroke", "black")
+            .attr("stroke-width", 2)
+            .attr("fill", "#d6b496");
+
+        // landmasses
+        map.selectAll(".land")
+            .data(geoLand.features)
+            .join(enter => enter.append("path")
+                .attr("d", path)
+                .attr("class", "land")
+                .attr("fill", "#e4b375")
+                .attr("stroke", "black")
+                .attr("stroke-width", 0.5)
+                .attr("clip-path", "url(#clip)"));
+        map.selectAll(".highlight")
+            .data(highlights.features)
+            .join(enter => enter.append("path")
+                .attr("d", path)
+                .attr("class", "highlight")
+                .attr("fill", "black")
+                .attr("opacity", d => d.properties.type == "dark" ? 1 : 0.5)
+                .attr("stroke-width", 0)
+                .attr("clip-path", "url(#clip)"));
+
+        // generate curved lines between hemispheres without clipping
+        const lineGenerator = d3.line()
+            .x(d => projection(d)[0])
+            .y(d => projection(d)[1])
+            .curve(d3.curveCardinal.tension(0.25));
+        lines.features.map(x => x.geometry.coordinates)
+            .forEach(coords => {
+                map.append("path")
+                    .data(coords)
+                    .attr("class", "line")
+                    .attr("fill", "none")
+                    .attr("stroke", "black")
+                    .attr("d", lineGenerator)
+                    .attr("stroke-width", 0.5)
+            });
+    }
+
+    async function onload() {
+        const land = await d3.json("./land-110m.json");
+        const highlights = await d3.json("./shapes.json");
+        const lines = await d3.json("./lines.json");
+        draw(land, highlights, lines);
+    }
+
+    onload();
+</script>
+
+</html>
