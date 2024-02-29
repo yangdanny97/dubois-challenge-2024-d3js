@@ -22,6 +22,10 @@
             margin-left: auto;
             margin-right: auto;
         }
+
+        .legend text {
+            font-size: 20px;
+        }
     </style>
 </head>
 
@@ -34,14 +38,15 @@
             href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge04/original-plate-01.jpg">Original
             plate</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
     </h3>
+    <svg></svg>
 </body>
 <script>
     const width = 1100,
-        height = 1200;
+        height = 1000;
 
     // coordinates are E,N
     const GEORGIA_COORD = [-81.834759538222769, 30.679555235289669];
-    const svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
+    const svg = d3.select("svg").attr("width", width).attr("height", height);
 
     function draw(land, highlights, lines) {
         const geoLand = topojson.feature(land, land.objects.land);
@@ -110,6 +115,81 @@
                     .attr("d", lineGenerator)
                     .attr("stroke-width", 0.5)
             });
+
+        // georgia marker
+        map.append("text")
+            .attr("x", projection(GEORGIA_COORD)[0])
+            .attr("y", projection(GEORGIA_COORD)[1] - 5)
+            .attr('dominant-baseline', 'middle')
+            .attr("text-anchor", "middle")
+            .attr("font-size", 10)
+            .attr("fill", "#d6b496")
+            .text("\u2605");
+
+        // curved text around the map
+        const textRadius = 260;
+        map.append("path")
+            .attr("id", "lTextPath")
+            .attr("transform", "translate(250,250)")
+            .attr("d", d3.arc()({
+                innerRadius: textRadius,
+                outerRadius: textRadius,
+                startAngle: Math.PI / 8,
+                endAngle: Math.PI / 2,
+            }));
+        map.append("path")
+            .attr("id", "rTextPath")
+            .attr("transform", "translate(750,250)")
+            .attr("d", d3.arc()({
+                innerRadius: textRadius,
+                outerRadius: textRadius,
+                startAngle: - Math.PI / 3.5,
+                endAngle: 0
+            }));
+        map.append("text").append("textPath")
+            .attr("xlink:href", "#lTextPath")
+            .text("DISTRIBUTION OF")
+        map.append("text").append("textPath")
+            .attr("xlink:href", "#rTextPath")
+            .text("THE NEGRO RACE")
+
+        // legend
+        const legend = svg.append("g").attr("class", "legend");
+        legend.append("text")
+            .attr("x", width / 2)
+            .attr("y", 600)
+            .attr("text-anchor", "middle")
+            .text("\u2261 ROUTES OF THE AFRICAN SLAVE TRADE");
+        legend.append("text")
+            .attr("x", width / 2)
+            .attr("y", 650)
+            .attr("text-anchor", "middle")
+            .text("\u272A THE STATE OF GEORGIA");
+        legend.append("text")
+            .attr("x", 230)
+            .attr("y", 750)
+            .attr("text-anchor", "left")
+            .text("THIS CASE IS DEVOTED TO A SERIES OF CHARTS,MAPS, AND OTHER DEVI-");
+        legend.append("text")
+            .attr("x", 140)
+            .attr("y", 775)
+            .attr("text-anchor", "left")
+            .text("CES DESIGNED TO ILLUSTRATE THE DEVELOPMENT OF THE AMERICAN NEGRO IN A");
+        legend.append("text")
+            .attr("x", 140)
+            .attr("y", 800)
+            .attr("text-anchor", "left")
+            .text("SINGLE TYPICAL STATE OF THE UNITED STATES.                            ");
+        legend.append("text")
+            .attr("x", width / 2)
+            .attr("y", 850)
+            .attr("text-anchor", "middle")
+            .html("\" THE PROBLEM OF THE 20<sup>th</sup> CENTURY IS THE PROBLEM OF THE");
+        legend.append("text")
+            .attr("x", width / 2)
+            .attr("y", 875)
+            .attr("text-anchor", "middle")
+            .html("COLOR-LINE.\"");
     }
 
     async function onload() {
