@@ -153,6 +153,21 @@
             .attr("xlink:href", "#rTextPath")
             .text("THE NEGRO RACE")
 
+        map.append("circle")
+            .attr("cx", 250)
+            .attr("cy", 247)
+            .attr("r", 250)
+            .attr("stroke", "black")
+            .attr("stroke-width", 2)
+            .attr("fill", "none");
+        map.append("circle")
+            .attr("cx", 750)
+            .attr("cy", 247)
+            .attr("r", 250)
+            .attr("stroke", "black")
+            .attr("stroke-width", 2)
+            .attr("fill", "none");
+
         // legend
         const legend = svg.append("g").attr("class", "legend");
         legend.append("text")
