@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #e4cfbed9;
+        }
+
+        h1,
+        h2,
+        h3 {
+            text-align: center;
+        }
+
+        svg {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>"RACE AMALGAMATION IN GEORGIA."</h1>
+    <h2>BASED ON A STUDY OF 40,000 INDIVIDUALS OF NEGRO DESCENT.</h2>
+    <h3><a
+            href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge05/original-plate-13.jpg">Original
+            plate</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
+    </h3>
+</body>
+<script>
+    const width = 1000,
+        height = 1000;
+    const svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
+    const DATA = [
+        { category: "black", value: 44, label: "white", bar: "black", text: ["I.E. FULL-BLOODED", "NEGROES."]},
+        { category: "brown", value: 40, label: "red", bar: "#40261c", text: ["I.E. PERSONS WITH", "SOME WHITE BLOOD", "OR DESCENDANTS", "OF LIGHT COLORED", "AFRICANS."]},
+        { category: "yellow", value: 16, label: "black", bar: "#f9ba00", text: ["I.E. PERSONS WITH", "MORE WHITE THAN", "NEGRO BLOOD."]}
+    ];
+
+    function draw() {
+        const yScale = d3.scaleLinear().domain([0, 100]).range([50, 950]);
+        let current = 0;
+        DATA.forEach(d => {
+            svg.append("rect")
+                .attr("x", 500)
+                .attr("y", yScale(current))
+                .attr("height", yScale(current + d.value) - yScale(current))
+                .attr("width", 300)
+                .attr("fill", d.bar);
+            svg.append("text")
+                .attr("x", 250)
+                .attr("y", yScale(current) + 40)
+                .attr("font-size", "1.5em")
+                .attr("dominant-baseline", "middle")
+                .attr("font-weight", "bold")
+                .text(d.category.toUpperCase() + ".");
+            svg.append("text")
+                .attr("x", 650)
+                .attr("y", yScale(current + d.value / 2))
+                .attr("fill", d.label)
+                .attr("font-size", "1.2em")
+                .attr("dominant-baseline", "middle")
+                .attr("text-anchor", "middle")
+                .text(d.value.toString() + "%");
+            textLines(d.text, 300, yScale(current) + 70);
+            current += d.value;
+        });
+
+    }
+
+    function textLines(lines, x, y) {
+        lines.forEach((line, i) => {
+            svg.append("text")
+                .attr("x", x)
+                .attr("y", y + i * 20)
+                .attr("dominant-baseline", "middle")
+                .text(line);
+        })
+    }
+
+    draw();
+</script>
+
+</html>
