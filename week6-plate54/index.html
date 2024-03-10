@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #e4cfbed9;
+        }
+
+        h1,
+        h2,
+        h3 {
+            text-align: center;
+        }
+
+        svg {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>"The Amalgamation of the White and Black elements of the population</h1>
+    <h1>in the United States."</h1>
+    <hr />
+    <h2>Amalgamation des elements blancs et noirs parmi la population Americaine.</h2>
+    <hr />
+    <h3>Done by Atlanta University.</h3>
+    <h3><a
+            href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge06/original-plate-54.jpg">Original
+            plate</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
+    </h3>
+    <svg width="1000" height="1000">
+        <defs>
+            <linearGradient id="LeftGradient" gradientTransform="rotate(10)">
+                <stop offset="95%" stop-color="black" />
+                <stop offset="100%" stop-color="#2c1d11" />
+            </linearGradient>
+            <linearGradient id="RightGradient" gradientTransform="rotate(-5)">
+                <stop offset="0%" stop-color="#f5b000" />
+                <stop offset="3%" stop-color="white" />
+            </linearGradient>
+            <pattern id="Lines" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="11" y2="11" stroke="silver" stroke-width="0.5" />
+            </pattern>
+        </defs>
+    </svg>
+</body>
+<script>
+    const width = 1000,
+        height = 1000;
+    const svg = d3.select("svg");
+    const DATA_1890 = {
+        negroes: 6337980,
+        mulattoes: 1113063,
+    };
+    const DATA_1860 = {
+        negroes: 3542147,
+        mulattoes: 411613,
+    }
+    // the first 3 are eyeballed
+    const DATA = [
+        { y: 25, negroes: DATA_1860.negroes / 4, mulattoes: 0 },
+        { y: 50, year: 1800, negroes: DATA_1860.negroes / 4, mulattoes: 0 },
+        { y: 350, year: 1840, negroes: DATA_1860.negroes * 3 / 4, mulattoes: DATA_1860.mulattoes / 2 },
+        { y: 650, year: 1860, negroes: DATA_1860.negroes, mulattoes: DATA_1860.mulattoes, p_n: 90, p_m: 10 },
+        { y: 950, year: 1890, negroes: DATA_1890.negroes, mulattoes: DATA_1890.mulattoes, p_n: 85, p_m: 15 },
+    ]
+
+    function draw() {
+        const xScale = d3.scaleLinear().domain([DATA_1890.negroes + DATA_1890.mulattoes / 2, 0]).range([100, 700]);
+
+        // left
+        const area = d3.area()
+            .y(d => d.y)
+            .x0(d => xScale(d.negroes + d.mulattoes / 2))
+            .x1(d => xScale(0));
+        const area2 = d3.area()
+            .y(d => d.y)
+            .x0(d => xScale(d.mulattoes / 2))
+            .x1(d => xScale(0));
+        const area3 = d3.area()
+            .y(d => d.y)
+            .x0(d => xScale(0))
+            .x1(d => xScale(- d.mulattoes / 2));
+        const area4 = d3.area()
+            .y(d => d.y)
+            .x0(d => xScale(d.mulattoes / 2))
+            .x1(d => xScale(- d.mulattoes / 2));
+        svg.append("path")
+            .attr("fill", "url(#LeftGradient)")
+            .attr("d", area(DATA));
+        // right
+        svg.append("rect")
+            .attr("x", xScale(0))
+            .attr("y", 25)
+            .attr("fill", "url(#RightGradient)")
+            .attr("width", 500)
+            .attr("height", 925);
+        svg.append("rect")
+            .attr("x", xScale(0))
+            .attr("y", 25)
+            .style("opacity", 0.5)
+            .attr("fill", "url(#Lines)")
+            .attr("width", 500)
+            .attr("height", 925);
+        // center
+        svg.append("path")
+            .attr("fill", "#885d35")
+            .attr("d", area2(DATA));
+        svg.append("path")
+            .attr("fill", "#f5b000")
+            .attr("d", area3(DATA));
+        svg.append("path")
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("stroke-width", 1)
+            .attr("d", area4(DATA));
+        // labels
+        DATA.forEach(d => {
+            if (d.year == undefined) {
+                return;
+            }
+            svg.append("line")
+                .attr("stroke", "white")
+                .attr("stroke-width", 1)
+                .attr("x1", xScale(d.negroes + d.mulattoes / 2))
+                .attr("x2", xScale(-d.mulattoes / 2))
+                .attr("y1", d.y)
+                .attr("y2", d.y);
+            svg.append("line")
+                .attr("stroke", "black")
+                .attr("stroke-width", 1)
+                .attr("x1", xScale(-d.mulattoes / 2))
+                .attr("x2", width)
+                .attr("y1", d.y)
+                .attr("y2", d.y);
+            if (d.year == 1890) {
+                svg.append("text")
+                    .attr("text-anchor", "end")
+                    .attr("dominant-baseline", "middle")
+                    .attr("x", xScale(d.negroes + d.mulattoes / 2) + 25)
+                    .attr("y", d.y + 25)
+                    .text(d.year.toString());
+            } else {
+                svg.append("text")
+                    .attr("text-anchor", "end")
+                    .attr("dominant-baseline", "middle")
+                    .attr("x", xScale(d.negroes + d.mulattoes / 2) - 25)
+                    .attr("y", d.y)
+                    .text(d.year.toString());
+            }
+            if (d.year == 1860 || d.year == 1890) {
+                svg.append("text")
+                    .attr("fill", "white")
+                    .attr("text-anchor", "middle")
+                    .attr("x", xScale((d.negroes + d.mulattoes) / 2))
+                    .attr("y", d.y - 5)
+                    .text(d.negroes.toLocaleString('en-US'));
+                svg.append("text")
+                    .attr("fill", (d.year == 1890) ? "black" : "white")
+                    .attr("text-anchor", "middle")
+                    .attr("x", xScale((d.negroes + d.mulattoes) / 2))
+                    .attr("y", d.y + 25)
+                    .text(d.p_n.toString() + "%");
+                svg.append("text")
+                    .attr("font-size", (d.year == 1890) ? "0.7em" : "0.6em")
+                    .attr("fill", "black")
+                    .attr("text-anchor", "middle")
+                    .attr("x", xScale(0))
+                    .attr("y", d.y - 5)
+                    .text(d.mulattoes.toLocaleString('en-US'));
+                svg.append("text")
+                    .attr("fill", "black")
+                    .attr("text-anchor", "middle")
+                    .attr("x", xScale(0))
+                    .attr("y", d.y + 25)
+                    .text(d.p_m.toString() + "%");
+            }
+            svg.append("text")
+                .attr("x", 400)
+                .attr("y", 750)
+                .attr("fill", "white")
+                .attr("text-anchor", "middle")
+                .attr("font-size", "1.2em")
+                .text("NEGROES");
+            svg.append("text")
+                .attr("x", xScale(0))
+                .attr("y", 750)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "0.55em")
+                .text("MULATTOES");
+            svg.append("text")
+                .attr("x", xScale(0))
+                .attr("y", 760)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "0.5em")
+                .text("+");
+            svg.append("text")
+                .attr("x", xScale(0))
+                .attr("y", 770)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "0.5em")
+                .text("MULATRES");
+            svg.append("text")
+                .attr("x", 850)
+                .attr("y", 750)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "1.2em")
+                .text("WHITES");
+        });
+
+        // jagged top
+        const [from, to] = [xScale(DATA_1860.negroes / 4), 1000];
+        const jaggedData = [{x: from - 1, y: 50}];
+        const magnitude = 7;
+        for (var i = Math.floor(from); i <= Math.floor(to); i++) {
+            const base = ((i - from) < 50 || (to - i) < 50) ? 40 : 32;
+            if ((i % 4) == 0) {
+                jaggedData.push({
+                    y: base - Math.random() * magnitude + magnitude / 2,
+                    x: i,
+                });
+            }
+        }
+        jaggedData.push({x: Math.ceil(to) + 1, y: 50})
+        svg.append("path")
+            .datum(jaggedData)
+            .attr("fill", "#e8d6c7")
+            .attr("d", d3.area()
+                .x(d => d.x)
+                .y0(0)
+                .y1(d => d.y)
+            );
+        svg.append("path")
+            .datum(jaggedData)
+            .attr("d", d3.line().x(d => d.x).y(d => d.y))
+            .attr("fill", "none")
+            .attr("stroke", "black");
+    }
+
+    draw();
+</script>
+
+</html>
