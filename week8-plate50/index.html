@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<script src="./d3.v7.min.js"></script>
+
+<head>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #e4cfbed9;
+        }
+
+        h1,
+        h2,
+        h3 {
+            text-align: center;
+        }
+
+        svg {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>"THE RISE OF THE NEGROES FROM SLAVERY TO FREEDOM IN ONE GENERATION."</h1>
+    <h1>PROGR&Egrave;S GRADUEL DES N&Egrave;GRES DE L'ESCLAVAGE &Agrave; LA LIBERT&Eacute; EN UNE
+        G&Eacute;N&Eacute;RATION.</h1>
+    <br />
+    <br />
+    <h3>DONE BY ATLANTA UNIVERSITY.</h3>
+    <h3><a
+            href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge08/original-plate-50.jpg">Original
+            plate</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
+    </h3>
+    <svg></svg>
+</body>
+<script>
+    const width = 1000,
+        height = 1200;
+    const svg = d3.select("svg").attr("width", width).attr("height", height);
+
+    function draw() {
+        textLines([
+            "IN 1890 NEARLY ONE FIFTH OF THEM OWNED THEIR OWN HOMES AND FARMS.",
+            "THIS ADVANCE WAS ACCOMPLISHED ENTIRELY WITHOUT STATE AID, AND IN THE",
+            "FACE OF PROSCRIPTIVE LAWS.",
+            "",
+            "EN 1890 ENVIRON UN CINQUI\u00c8ME \u00c9TAIENT PROPRI\u00c9TAIRES DE LEURS HAB-",
+            "ITATIONS ET DE LEURS FERMES. CE PROGR\u00c8S S'EST ACCOMPLI SANS",
+            "SECOURS AUCUN DE L'ETAT ET EN PR\u00c9SENCE DE LOIS D\u00c9FAVORABLES."
+        ], 50, 100, "start");
+        textLines([
+            "IN 1860 NEARLY 90% OF THE BLACKS WERE SLAVES.",
+            "",
+            "EN 1860 ENVIRON 90% DES NEGRES \u00c9TAIENT ESCLAVES."
+        ], 300, 400, "middle");
+        const scaleRight = d3.scaleLinear().domain([0, 100]).range([0, 800]);
+        const scaleLeft = d3.scaleLinear().domain([0, 100]).range([0, 500]);
+        svg.append("rect")
+            .attr("fill", "#c7163d")
+            .attr("width", 300)
+            .attr("height", scaleRight(19))
+            .attr("transform", "translate(700,50)");
+        svg.append("rect")
+            .attr("fill", "#0b6032")
+            .attr("y", scaleRight(19))
+            .attr("width", 300)
+            .attr("height", scaleRight(81))
+            .attr("transform", "translate(700,50)");
+        svg.append("rect")
+            .attr("fill", "#0b6032")
+            .attr("width", 300)
+            .attr("height", scaleLeft(11))
+            .attr("transform", "translate(100,700)");
+        svg.append("rect")
+            .attr("fill", "black")
+            .attr("y", scaleLeft(11))
+            .attr("width", 300)
+            .attr("height", scaleLeft(89))
+            .attr("transform", "translate(100,700)");
+        svg.append("line")
+            .attr("x1", 400)
+            .attr("x2", 700)
+            .attr("y1", 700)
+            .attr("y2", scaleRight(19) + 50)
+            .attr("stroke", "black")
+            .attr("stroke-width", 2)
+            .attr("stroke-dasharray", "10,10");
+        svg.append("line")
+            .attr("x1", 400)
+            .attr("x2", 700)
+            .attr("y1", 700 + scaleLeft(11))
+            .attr("y2", scaleRight(100) + 50)
+            .attr("stroke", "black")
+            .attr("stroke-width", 2)
+            .attr("stroke-dasharray", "10,10");
+
+        svg.append("text")
+            .attr("x", 850)
+            .attr("y", 25)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("fill", "black")
+            .attr("font-size", "1.5em")
+            .attr("font-weight", "bold")
+            .text("1890");
+        svg.append("text")
+            .attr("x", 250)
+            .attr("y", 675)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("fill", "black")
+            .attr("font-size", "1.5em")
+            .attr("font-weight", "bold")
+            .text("1860");
+        // 1860 free laborers
+        svg.append("text")
+            .attr("x", 125)
+            .attr("y", 700 + scaleLeft(11) / 2)
+            .attr("dominant-baseline", "middle")
+            .attr("fill", "black")
+            .attr("font-size", "1.5em")
+            .attr("font-weight", "bold")
+            .text("11%");
+        svg.append("text")
+            .attr("x", 375)
+            .attr("y", 700 + scaleLeft(11) / 3)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "end")
+            .attr("fill", "black")
+            .attr("font-size", "1.25em")
+            .attr("font-weight", "bold")
+            .text("FREE LABORERS");
+        svg.append("text")
+            .attr("x", 375)
+            .attr("y", 700 + scaleLeft(11) * 2 / 3)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "end")
+            .attr("fill", "black")
+            .attr("font-size", "1.25em")
+            .attr("font-weight", "bold")
+            .text("OUVRIERS LIBRES");
+        // 1860 slaves
+        svg.append("text")
+            .attr("x", 250)
+            .attr("y", 700 + scaleLeft(11) + scaleLeft(89) / 2 - 10)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("fill", "red")
+            .attr("font-size", "2.5em")
+            .attr("font-weight", "bold")
+            .text("89%");
+        svg.append("text")
+            .attr("x", 250)
+            .attr("y", 700 + scaleLeft(11) + scaleLeft(89) / 2 + 25)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("fill", "red")
+            .attr("font-size", "1.5em")
+            .attr("font-weight", "bold")
+            .text("SLAVES");
+        svg.append("text")
+            .attr("x", 250)
+            .attr("y", 700 + scaleLeft(11) + scaleLeft(89) / 2 + 50)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("fill", "red")
+            .attr("font-size", "1.5em")
+            .attr("font-weight", "bold")
+            .text("ESCLAVES");
+        // 1890 tenants
+        svg.append("text")
+            .attr("x", 850)
+            .attr("y", 50 + scaleRight(19) + scaleRight(81) / 2 - 10)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("fill", "black")
+            .attr("font-size", "2.5em")
+            .attr("font-weight", "bold")
+            .text("81%");
+        svg.append("text")
+            .attr("x", 850)
+            .attr("y", 50 + scaleRight(19) + scaleRight(81) / 2 + 25)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("fill", "black")
+            .attr("font-size", "1.5em")
+            .attr("font-weight", "bold")
+            .text("TENANTS");
+        svg.append("text")
+            .attr("x", 850)
+            .attr("y", 50 + scaleRight(19) + scaleRight(81) / 2 + 50)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("fill", "black")
+            .attr("font-size", "1.5em")
+            .attr("font-weight", "bold")
+            .text("M\u00c9TAYERS");
+        // 1890 peasant proprietors
+        svg.append("text")
+            .attr("x", 850)
+            .attr("y", 50 + scaleRight(19) / 3)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("fill", "black")
+            .attr("font-size", "1.5em")
+            .attr("font-weight", "bold")
+            .text("19%");
+        svg.append("text")
+            .attr("x", 850)
+            .attr("y", 50 + scaleRight(19) / 2)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("fill", "black")
+            .attr("font-size", "1.25em")
+            .attr("font-weight", "bold")
+            .text("PEASANT PROPRIETORS");
+        svg.append("text")
+            .attr("x", 850)
+            .attr("y", 50 + scaleRight(19) * 2 / 3)
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "middle")
+            .attr("fill", "black")
+            .attr("font-size", "1.25em")
+            .attr("font-weight", "bold")
+            .text("PAYSANS PROPRIETAIRES");
+    }
+
+    function textLines(lines, x, y, alignment, color) {
+        lines.forEach((line, i) => {
+            svg.append("text")
+                .attr("x", x)
+                .attr("y", y + i * 20)
+                .attr("dominant-baseline", "middle")
+                .attr("text-anchor", alignment)
+                .attr("fill", color != null ? color : "black")
+                .text(line);
+        })
+    }
+
+    draw();
+</script>
+
+</html>
