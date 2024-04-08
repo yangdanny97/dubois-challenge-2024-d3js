@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<head>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #e4cfbed9;
+        }
+
+        h1,
+        h2,
+        h3 {
+            text-align: center;
+        }
+
+        svg {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .red {
+            color: red;
+        }
+
+        .left {
+            text-align: left;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        td {
+            text-align: center;
+            width: 33.33%;
+        }
+
+        .black {
+            background-color: black;
+            color: white;
+            padding-left: 5px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>"A SERIES OF STATISTICAL CHARTS, ILLUSTRA-<br />TING THE CONDITION OF THE DESCENDANTS OF FOR-<br />MER AFRICAN
+        SLAVES NOW RESIDENT IN THE UNITED STATES OF AMERICA."</h1>
+    <h3><a
+            href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge10/original-plate-37.jpg">Original
+            plate</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
+    </h3>
+    <h2 class="red">UNE S&Eacute;RIE DE CARTES ET DIAGRAMMES STATISTIQUES MONTRANT LA<br />CONDITION PR&Eacute;SENTE DES
+        DESCENDANTS DES ANCIENS ESCLAVES AFRI-<br />CAINS ACTUEL LMENT &Eacute;TABLIS DANS LES ETATS UNIS
+        D'AM&Eacute;RIQUE. </h2>
+    <table>
+        <tr>
+            <td>
+                PREPARED AND EXECUTED BY<br />NEGRO STUDENTS UNDER THE<br />DIRECTION OF<br />
+                ATLANTA UNIVERSITY,<br />
+                ATLANTA, GA.<br />
+                UNITED STATES OF AMERICA.
+            </td>
+            <td><div id="map"></div>
+                <span class="black">&#x25CF; </span> CENTRE OF NEGRO POPULATION.<br/>
+                <span class="black">&#x2605; </span> ATLANTA UNIVERSITY.
+            </td>
+            <td class="red">PR&Eacute;PAR&Eacute;ES ET EXECUT&Eacute;ES PAR<br />DES &Eacute;TUDIANTS N&Egrave;GRES
+                SOUS<br />LA DIRECTION DE L'UNIVERSIT&Eacute;<br />D'ATLANTA.
+                <br />ETAT DE GEORGIE.<br />ETATS UNIS D'AMERIQUE.
+            </td>
+        </tr>
+    </table>
+    <h3>
+        THE UNIVERSITY WAS FOUNDED IN 1867. IT HAS INSTRUCTED 6000 NEGRO STUDENTS.
+        <br /><span class="red">
+            &Lacute; UNIVERSITE A &Eacute;T&Eacute; FOND&Eacute;E EN 1867. ELLE A DONN&Eacute; L'INSTRUCTION A6000
+            &Eacute;TUDIANTS NEGRES.
+        </span><br />
+        IT HAS GRADUATED 330 NEGROES AMONG WHOM ARE:
+        <br /><span class="red">
+            ELLE A D&Eacute;LIVRE DES DIPLOMES A 330 NEGRES DONT :
+        </span>
+    </h3>
+    <div id="vis"></div>
+    <h3>
+        THE UNIVERSITY HAS 20 PROFESSORS AND INSTRUCTORS AND 250 STUDENTS AT PRESENT.<br />
+        IT HAS FIVE BUILDINGS. 60 ACRES OF CAMPUS, AND A LIBRARY OF 11,000 VOLUMES IT AIMS TO RAISE<br />AND CIVILIZE
+        THE SONS OF THE FREEDMEN BY TRAINING THEIR MORE CAPABLE MEMBERS IN THE LIBER-<br />AL ARTS ACCORDING TO THE BEST
+        STANDARDS OF THE DAY,<br />
+        THE PROPER ACCOMPLISHMENT OF THIS WORK DEMANDS AN ENDOWMENT FUND OF $500,000.
+    </h3>
+    <h3>
+        &Lacute; UNIVERSIT&Eacute; A ACTUELLEMENT 20 PROFESSEURS ET INSTRUCTEURS ET 250 &Eacute;TUDIANTS.
+        <br />ELLE EST COMPOS&Eacute;E DE CINC B&Acirc;TIMENTS. 60 ACRES (ENVIRON 26 HECTARES) DE TERRAIN SERVANT DE
+        <br />COUR ET DE CHAMP DE R&Eacute;CR&Eacute;ATION, ET DUNE BIBLIOTH&Egrave;QUE CONTENANT 11,000 VOLUMES.
+        <br />SON BUT EST D'&Eacute;LEVER ET DE CIVILISER LES FILS DES N&Egrave;GRES AFFRANCHIS EN DONNANT AUX MIEUX
+        <br />DOUES UNE &Eacute;DUCATION DANS LES ARTS LIB&Eacute;RAUX EN ACCORD AVEC LES ID&Eacute;ES LES PLUS PROGRES-
+        <br />SISTES DE L'&Eacute;POQUE.
+        <br />&Lacute; ACCOMPLISSEMENT DE CETTE CEUVRE DEMANDE UNE DOTATION DE $500,000 (2,500,000 FRANCS).
+    </h3>
+</body>
+<script>
+    const width = 1200,
+        height = 400;
+    const pieSvg = d3.select("#vis").append("svg").attr("width", width).attr("height", height);
+    const mapSvg = d3.select("#map").append("svg").attr("width", 200).attr("height", 175);
+    function drawPie(data) {
+        const colorScale = d3.scaleOrdinal()
+            .domain(data.map(d => d.Occupation))
+            .range(["#e53050", "#7277a2", "#e0bbae", "#b28f77", "#988e7d", "#eeb559"]);
+        const yScale = d3.scaleBand()
+            .domain(data.map(d => d.Occupation))
+            .range([50, 350]);
+        const pie = d3.pie().value(d => d.Percentage)
+            .startAngle(-Math.PI / 2)
+            .sort((a, b) => a.Order - b.Order);
+        const processed_data = pie(data);
+        const radius = 200;
+        const arc = d3.arc()
+            .innerRadius(0)
+            .outerRadius(radius);
+        // special arc for centroid calculations on smaller slices
+        const arc2 = d3.arc()
+            .innerRadius(0)
+            .outerRadius(radius * 1.7);
+        const pieChart = pieSvg.append("g")
+            .attr("transform", `translate(${width / 2},${radius})`);
+        pieChart.selectAll(".piepath")
+            .data(processed_data)
+            .join(enter => enter
+                .append('path')
+                .attr('d', arc)
+                .attr('fill', d => colorScale(d.data.Occupation))
+                .attr("stroke", "black")
+                .attr("class", "piepath")
+                .style("stroke-width", "1px"));
+        pieChart.selectAll(".pietext")
+            .data(processed_data)
+            .join(enter => enter
+                .append('text')
+                .attr("class", "pietext")
+                .attr("transform", d => d.data.Percentage > 5 ? `translate(${arc.centroid(d)})` : `translate(${arc2.centroid(d)})`)
+                .attr('fill', 'black')
+                .attr("text-anchor", "middle")
+                .attr("dominant-baseline", "middle")
+                .attr("font-size", d => d.data.Percentage > 5 ? "1em" : "0.75em")
+                .text(d => d.data.Percentage + "%"));
+        const leftLegend = pieSvg.append("g");
+        leftLegend.selectAll("circle")
+            .data(data)
+            .join(enter => enter.append("circle")
+                .attr("stroke-width", "1px")
+                .attr("stroke", "black")
+                .attr("fill", d => colorScale(d.Occupation))
+                .attr("cx", 30)
+                .attr("cy", d => yScale(d.Occupation))
+                .attr("r", 10));
+        leftLegend.selectAll("text")
+            .data(data)
+            .join(enter => enter.append("text")
+                .attr("x", 50)
+                .attr("y", d => yScale(d.Occupation))
+                .text(d => d.Occupation.toUpperCase())
+                .attr("dominant-baseline", "middle"));
+        const rightLegend = pieSvg.append("g");
+        rightLegend.selectAll("circle")
+            .data(data)
+            .join(enter => enter.append("circle")
+                .attr("stroke-width", "1px")
+                .attr("stroke", "black")
+                .attr("fill", d => colorScale(d.Occupation))
+                .attr("cx", width - 30)
+                .attr("cy", d => yScale(d.Occupation))
+                .attr("r", 10));
+        rightLegend.selectAll("text")
+            .data(data)
+            .join(enter => enter.append("text")
+                .attr("fill", "red")
+                .attr("x", width - 50)
+                .attr("y", d => yScale(d.Occupation))
+                .text(d => d.French.toUpperCase())
+                .attr("dominant-baseline", "middle")
+                .attr("text-anchor", "end"));
+    }
+
+    function drawMap(shape) {
+        const projection = d3.geoAlbersUsa().fitExtent([[0, 0], [200, 175]], shape);
+        const path = d3.geoPath().projection(projection);
+        const colorScale = d3.scaleOrdinal()
+            .domain([0, 1, 2, 3, 4, 5, 6])
+            .range(["#e53050", "#7277a2", "#e0bbae", "#b28f77", "#988e7d", "#eeb559", "navy"]);
+        mapSvg.append("g")
+            .selectAll("path")
+            .data(shape.features)
+            .join(enter => enter.append("path")
+                .attr("d", path)
+                .attr("stroke", d => d.properties.STATENAM != null ? "black" : "none")
+                .attr("fill", (_, i) => colorScale(i)));
+    }
+
+    async function onload() {
+        const csv = await d3.csv("./data.csv");
+        csv.forEach(d => {
+            d.Percentage = parseFloat(d.Percentage);
+            d.Order = parseInt(d.Order);
+        });
+        drawPie(csv);
+        const shape = await d3.json("./US_state_1900_lowres.json");
+        drawMap(shape);
+    }
+
+    onload();
+</script>
+
+</html>
