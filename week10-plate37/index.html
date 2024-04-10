@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html>
 <script src="https://d3js.org/d3.v7.min.js"></script>
+
 <head>
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background-color: #e4cfbed9;
+            background-color: #e4cfbe;
         }
 
         h1,
@@ -64,8 +65,9 @@
                 ATLANTA, GA.<br />
                 UNITED STATES OF AMERICA.
             </td>
-            <td><div id="map"></div>
-                <span class="black">&#x25CF; </span> CENTRE OF NEGRO POPULATION.<br/>
+            <td>
+                <div id="map"></div>
+                <span class="black">&#x25CF; </span> CENTRE OF NEGRO POPULATION.<br />
                 <span class="black">&#x2605; </span> ATLANTA UNIVERSITY.
             </td>
             <td class="red">PR&Eacute;PAR&Eacute;ES ET EXECUT&Eacute;ES PAR<br />DES &Eacute;TUDIANTS N&Egrave;GRES
@@ -104,8 +106,10 @@
     </h3>
 </body>
 <script>
+    // coordinates are E,N
+    const ATLANTA_UNIVERSITY_COORD = [-84.412847, 33.747418]
     const width = 1200,
-        height = 400;
+        height = 450;
     const pieSvg = d3.select("#vis").append("svg").attr("width", width).attr("height", height);
     const mapSvg = d3.select("#map").append("svg").attr("width", 200).attr("height", 175);
     function drawPie(data) {
@@ -128,7 +132,7 @@
             .innerRadius(0)
             .outerRadius(radius * 1.7);
         const pieChart = pieSvg.append("g")
-            .attr("transform", `translate(${width / 2},${radius})`);
+            .attr("transform", `translate(${width / 2},${radius + 25})`);
         pieChart.selectAll(".piepath")
             .data(processed_data)
             .join(enter => enter
@@ -200,6 +204,23 @@
                 .attr("d", path)
                 .attr("stroke", d => d.properties.STATENAM != null ? "black" : "none")
                 .attr("fill", (_, i) => colorScale(i)));
+        // georgia and atlanta university markers
+        mapSvg.append("text")
+            .attr("x", projection(ATLANTA_UNIVERSITY_COORD)[0] + 3)
+            .attr("y", projection(ATLANTA_UNIVERSITY_COORD)[1] + 3)
+            .attr('dominant-baseline', 'middle')
+            .attr("text-anchor", "middle")
+            .attr("font-size", 5)
+            .attr("fill", "white")
+            .text("\u25CF");
+        mapSvg.append("text")
+            .attr("x", projection(ATLANTA_UNIVERSITY_COORD)[0] - 2)
+            .attr("y", projection(ATLANTA_UNIVERSITY_COORD)[1] - 2)
+            .attr('dominant-baseline', 'middle')
+            .attr("text-anchor", "middle")
+            .attr("font-size", 5)
+            .attr("fill", "white")
+            .text("\u2605");
     }
 
     async function onload() {

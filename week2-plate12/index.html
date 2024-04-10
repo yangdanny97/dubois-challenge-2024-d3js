@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
-            background-color: #e4cfbed9;
+            background-color: #e4cfbe;
         }
 
         h1, h3 {
@@ -45,12 +45,12 @@
         .attr("y", 100)
         .attr("width", 450)
         .attr("height", 1000)
-        .attr("stroke", "white")
+        .attr("stroke", "#e4cfbe")
         .attr("fill", "black");
         svg.append("path")
         .datum(data)
         .attr("fill", "#dc143c")
-        .attr("stroke", "white")
+        .attr("stroke", "#e4cfbe")
         .attr("d", d3.area()
             .x0(percentScale(0))
             .x1(d => percentScale(d.Free))
@@ -69,8 +69,8 @@
         }
         svg.append("path")
         .datum(jaggedData)
-        .attr("fill", "white")
-        .attr("stroke", "white")
+        .attr("fill", "#e4cfbe")
+        .attr("stroke", "#e4cfbe")
         .attr("d", d3.area()
             .x0(percentScale(100))
             .x1(d => percentScale(d.n))
@@ -96,7 +96,7 @@
                 .attr("x2", 700)
                 .attr("y1", yearScale(d.Year))
                 .attr("y2", yearScale(d.Year))
-                .attr("stroke", "white");
+                .attr("stroke", "#e4cfbe");
         });
         [0, 1, 2, 3].forEach(d => {
             // 0 is not labeled on the axis
