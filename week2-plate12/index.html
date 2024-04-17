@@ -9,7 +9,8 @@
             background-color: #e4cfbe;
         }
 
-        h1, h3 {
+        h1,
+        h3 {
             text-align: center;
         }
 
@@ -26,6 +27,7 @@
     <h3><a
             href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge02/original-plate-12.jpg">Original
             plate</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
+        <a href="https://yangdanny97.github.io/dubois-challenge-2024-d3js/">Index</a>
     </h3>
 </body>
 <script>
@@ -33,7 +35,7 @@
         height = 1200;
     const svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
 
-    function draw(data) {        
+    function draw(data) {
         const percentScale = d3.scaleLinear()
             .domain([3, 0])
             .range([300, 700]);
@@ -41,21 +43,21 @@
             .domain(d3.extent(data, d => d.Year))
             .range([100, 1100]);
         svg.append("rect")
-        .attr("x", 250)
-        .attr("y", 100)
-        .attr("width", 450)
-        .attr("height", 1000)
-        .attr("stroke", "#e4cfbe")
-        .attr("fill", "black");
+            .attr("x", 250)
+            .attr("y", 100)
+            .attr("width", 450)
+            .attr("height", 1000)
+            .attr("stroke", "#e4cfbe")
+            .attr("fill", "black");
         svg.append("path")
-        .datum(data)
-        .attr("fill", "#dc143c")
-        .attr("stroke", "#e4cfbe")
-        .attr("d", d3.area()
-            .x0(percentScale(0))
-            .x1(d => percentScale(d.Free))
-            .y(d => yearScale(d.Year))
-        );
+            .datum(data)
+            .attr("fill", "#dc143c")
+            .attr("stroke", "#e4cfbe")
+            .attr("d", d3.area()
+                .x0(percentScale(0))
+                .x1(d => percentScale(d.Free))
+                .y(d => yearScale(d.Year))
+            );
         // create jagged shape to cut off both red and black data
         const [minYear, maxYear] = d3.extent(data, d => d.Year);
         const jaggedData = [];
@@ -68,14 +70,14 @@
             });
         }
         svg.append("path")
-        .datum(jaggedData)
-        .attr("fill", "#e4cfbe")
-        .attr("stroke", "#e4cfbe")
-        .attr("d", d3.area()
-            .x0(percentScale(100))
-            .x1(d => percentScale(d.n))
-            .y(d => yearScale(d.i))
-        );
+            .datum(jaggedData)
+            .attr("fill", "#e4cfbe")
+            .attr("stroke", "#e4cfbe")
+            .attr("d", d3.area()
+                .x0(percentScale(100))
+                .x1(d => percentScale(d.n))
+                .y(d => yearScale(d.i))
+            );
         data.forEach((d, i) => {
             svg.append("text")
                 .attr("x", 270)

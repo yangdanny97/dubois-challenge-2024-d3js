@@ -29,6 +29,7 @@
     <h3><a
             href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge05/original-plate-13.jpg">Original
             plate</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
+        <a href="https://yangdanny97.github.io/dubois-challenge-2024-d3js/">Index</a>
     </h3>
 </body>
 <script>
@@ -36,9 +37,9 @@
         height = 1000;
     const svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
     const DATA = [
-        { category: "black", value: 44, label: "white", bar: "black", text: ["I.E. FULL-BLOODED", "NEGROES."]},
-        { category: "brown", value: 40, label: "red", bar: "#40261c", text: ["I.E. PERSONS WITH", "SOME WHITE BLOOD", "OR DESCENDANTS", "OF LIGHT COLORED", "AFRICANS."]},
-        { category: "yellow", value: 16, label: "black", bar: "#f9ba00", text: ["I.E. PERSONS WITH", "MORE WHITE THAN", "NEGRO BLOOD."]}
+        { category: "black", value: 44, label: "white", bar: "black", text: ["I.E. FULL-BLOODED", "NEGROES."] },
+        { category: "brown", value: 40, label: "red", bar: "#40261c", text: ["I.E. PERSONS WITH", "SOME WHITE BLOOD", "OR DESCENDANTS", "OF LIGHT COLORED", "AFRICANS."] },
+        { category: "yellow", value: 16, label: "black", bar: "#f9ba00", text: ["I.E. PERSONS WITH", "MORE WHITE THAN", "NEGRO BLOOD."] }
     ];
 
     function draw() {

@@ -9,7 +9,8 @@
             background-color: #e4cfbe;
         }
 
-        h1, h3 {
+        h1,
+        h3 {
             text-align: center;
         }
 
@@ -26,6 +27,7 @@
     <h3><a
             href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge03/original-plate-19.jpg">Original
             plate</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
+        <a href="https://yangdanny97.github.io/dubois-challenge-2024-d3js/">Index</a>
     </h3>
 </body>
 <script>
@@ -33,7 +35,7 @@
         height = 1200;
     const svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
 
-    function draw(data) {        
+    function draw(data) {
         const acreScale = d3.scaleLinear()
             .domain(d3.extent(data, d => d.Acres))
             .range([300, 800]);
@@ -41,30 +43,30 @@
             .domain(data.map(d => d.Year))
             .range([50, 1150])
             .padding(0.45);
-        
+
         svg.selectAll("g")
             .data(data)
             .join(enter => {
                 let g = enter.append("g");
                 g.append("rect")
-                .attr('x', acreScale(0))
-                .attr('width', d => acreScale(d.Acres) - acreScale(0))
-                .attr('y', d => yearScale(d.Year))
-                .attr('height', yearScale.bandwidth())
-                .attr('fill', '#dc143c');
+                    .attr('x', acreScale(0))
+                    .attr('width', d => acreScale(d.Acres) - acreScale(0))
+                    .attr('y', d => yearScale(d.Year))
+                    .attr('height', yearScale.bandwidth())
+                    .attr('fill', '#dc143c');
                 g.append("text")
-                .attr("text-anchor", "end")
-                .attr('dominant-baseline', 'middle')
-                .attr("x", acreScale(0) - 10)
-                .attr("y", d => yearScale(d.Year) + yearScale.bandwidth() / 2)
-                .text(d => d.Year);
+                    .attr("text-anchor", "end")
+                    .attr('dominant-baseline', 'middle')
+                    .attr("x", acreScale(0) - 10)
+                    .attr("y", d => yearScale(d.Year) + yearScale.bandwidth() / 2)
+                    .text(d => d.Year);
                 g.append("text")
-                .attr("text-anchor", "end")
-                .attr('dominant-baseline', 'middle')
-                .attr("x", d => acreScale(d.Acres) / 2 + acreScale(0) / 2)
-                .attr("y", d => yearScale(d.Year) + yearScale.bandwidth() / 2)
-                .attr("font-weight", "bold")
-                .text((d, i) => (i === 0 || i === data.length - 1) ? d.Acres.toLocaleString() : "");
+                    .attr("text-anchor", "end")
+                    .attr('dominant-baseline', 'middle')
+                    .attr("x", d => acreScale(d.Acres) / 2 + acreScale(0) / 2)
+                    .attr("y", d => yearScale(d.Year) + yearScale.bandwidth() / 2)
+                    .attr("font-weight", "bold")
+                    .text((d, i) => (i === 0 || i === data.length - 1) ? d.Acres.toLocaleString() : "");
             });
     }
 

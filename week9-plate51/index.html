@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <script src="https://d3js.org/d3.v7.min.js"></script>
+
 <head>
     <style>
         body {
@@ -8,7 +9,8 @@
             background-color: #e4cfbe;
         }
 
-        h1, h3 {
+        h1,
+        h3 {
             text-align: center;
         }
 
@@ -24,11 +26,12 @@
     <h1>"PROPORTION OF FREEMEN AND SLAVES AMONG AMERICAN NEGROES ."</h1>
     <h1>PROPORTION DES N&Egrave;GRES LIBRES ET DE ESCLAVES EN AM&Eacute;ERIQUE .</h1>
     <h3>DONE BY ATLANTA UNIVERSITY.</h3>
-    <br/>
-    <br/>
+    <br />
+    <br />
     <h3><a
             href="https://github.com/ajstarks/dubois-data-portraits/blob/master/challenge/2024/challenge09/original-plate-51.jpg">Original
             plate</a> by W.E.B. DuBois, recreated using D3.js by <a href="https://yangdanny97.github.io">Danny Yang</a>.
+        <a href="https://yangdanny97.github.io/dubois-challenge-2024-d3js/">Index</a>
     </h3>
 </body>
 <script>
@@ -36,7 +39,7 @@
         height = 1200;
     const svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
 
-    function draw(data) {        
+    function draw(data) {
         const percentScale = d3.scaleLinear()
             .domain([0, 100])
             .range([100, height - 100]);
@@ -44,20 +47,20 @@
             .domain(d3.extent(data, d => d.Year))
             .range([50, width - 50]);
         svg.append("rect")
-        .attr("x", 50)
-        .attr("y", 100)
-        .attr("width", width - 100)
-        .attr("height", height - 200)
-        .attr("fill", "black");
+            .attr("x", 50)
+            .attr("y", 100)
+            .attr("width", width - 100)
+            .attr("height", height - 200)
+            .attr("fill", "black");
         svg.append("path")
-        .datum(data)
-        .attr("fill", "#408c5f")
-        .attr("stroke", "black")
-        .attr("d", d3.area()
-            .y0(percentScale(0))
-            .y1(d => percentScale(d.Free))
-            .x(d => yearScale(d.Year))
-        );
+            .datum(data)
+            .attr("fill", "#408c5f")
+            .attr("stroke", "black")
+            .attr("d", d3.area()
+                .y0(percentScale(0))
+                .y1(d => percentScale(d.Free))
+                .x(d => yearScale(d.Year))
+            );
         data.forEach((d, i) => {
             svg.append("text")
                 .attr("x", yearScale(d.Year))
